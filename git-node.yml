@@ -3,41 +3,48 @@
 # execute and watch the output from the job
 # fly -t lite watch -j git-node/fake-todos-test
 resources:
-- name: resource-fake-todos-git
+- name: fake-todos-git
   type: git
   source:
     uri: https://github.com/bahmutov/fake-todos.git
     branch: master
-
+- name: fake-todos-concourse-git
+  type: git
+  source:
+    uri: https://github.com/bahmutov/fake-todos-concourse.git
+    branch: master
 # jobs:
 # - name: install
 #   plan:
-#     - get: resource-fake-todos-git
+#     - get: fake-todos-git
 
 jobs:
 - name: fake-todos-test
   public: true
   plan:
-    - get: resource-fake-todos-git
+    - get: fake-todos-git
+    - get: fake-todos-concourse-git
     - task: test-fake-todos
       config:
         platform: linux
         image: docker:///mhart/alpine-node
         inputs:
-          - name: resource-fake-todos-git
+          - name: fake-todos-git
             path: repo
-          - name: test-concourse
-            path: ./test-concourse/npm-install.sh
+          - name: fake-todos-concourse-git
+            path: scripts
         run:
-          path: ./npm-install.sh
+          path: ../scripts/npm-install.sh
           dir: repo
+          # path: ls
+          # args: [-laR]
 
 # - task: hello-world
 #   config:
 #     platform: linux
 #     image: docker:///mhart/alpine-node
 #     inputs:
-#       - name: resource-fake-todos-git
+#       - name: fake-todos-git
 #         path: repo
 #     run:
 #       path: npm
