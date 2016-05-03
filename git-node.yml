@@ -1,0 +1,45 @@
+# define / update pipeline definition
+# fly sp -t lite -c git-node.yml -p git-node
+# execute and watch the output from the job
+# fly -t lite watch -j git-node/fake-todos-test
+resources:
+- name: resource-fake-todos-git
+  type: git
+  source:
+    uri: https://github.com/bahmutov/fake-todos.git
+    branch: master
+
+# jobs:
+# - name: install
+#   plan:
+#     - get: resource-fake-todos-git
+
+jobs:
+- name: fake-todos-test
+  public: true
+  plan:
+    - get: resource-fake-todos-git
+    - task: test-fake-todos
+      config:
+        platform: linux
+        image: docker:///mhart/alpine-node
+        inputs:
+          - name: resource-fake-todos-git
+            path: repo
+          - name: test-concourse
+            path: ./test-concourse/npm-install.sh
+        run:
+          path: ./npm-install.sh
+          dir: repo
+
+# - task: hello-world
+#   config:
+#     platform: linux
+#     image: docker:///mhart/alpine-node
+#     inputs:
+#       - name: resource-fake-todos-git
+#         path: repo
+#     run:
+#       path: npm
+#       dir: repo
+#       args: [test]
