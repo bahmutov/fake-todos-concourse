@@ -1,7 +1,5 @@
-# define / update pipeline definition
-# fly sp -t lite -c git-node.yml -p git-node
-# execute and watch the output from the job
-# fly -t lite watch -j git-node/fake-todos-test
+# see the README.md for details
+
 resources:
 - name: fake-todos-git
   type: git
@@ -13,10 +11,6 @@ resources:
   source:
     uri: https://github.com/bahmutov/fake-todos-concourse.git
     branch: master
-# jobs:
-# - name: install
-#   plan:
-#     - get: fake-todos-git
 
 jobs:
 - name: fake-todos-test
@@ -34,19 +28,5 @@ jobs:
           - name: fake-todos-concourse-git
             path: scripts
         run:
-          path: ../scripts/npm-install.sh
+          path: ../scripts/npm-install-and-test.sh
           dir: repo
-          # path: ls
-          # args: [-laR]
-
-# - task: hello-world
-#   config:
-#     platform: linux
-#     image: docker:///mhart/alpine-node
-#     inputs:
-#       - name: fake-todos-git
-#         path: repo
-#     run:
-#       path: npm
-#       dir: repo
-#       args: [test]
